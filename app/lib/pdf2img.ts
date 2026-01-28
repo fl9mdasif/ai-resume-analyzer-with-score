@@ -12,14 +12,21 @@ async function loadPdfJs(): Promise<any> {
     if (pdfjsLib) return pdfjsLib;
     if (loadPromise) return loadPromise;
 
+    console.log('Loading PDF.js...');
     isLoading = true;
     // @ts-expect-error - pdfjs-dist/build/pdf.mjs is not a module
     loadPromise = import("pdfjs-dist/build/pdf.mjs").then((lib) => {
+        console.log('PDF.js loaded, setting worker source...');
         // Set the worker source to use local file
         lib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
         pdfjsLib = lib;
         isLoading = false;
         return lib;
+    }).catch(err => {
+        console.error('Failed to load PDF.js lib:', err);
+        isLoading = false;
+        loadPromise = null;
+        throw err;
     });
 
     return loadPromise;
@@ -32,7 +39,9 @@ export async function convertPdfToImage(
         const lib = await loadPdfJs();
 
         const arrayBuffer = await file.arrayBuffer();
+        console.log('Got arrayBuffer, loading document...');
         const pdf = await lib.getDocument({ data: arrayBuffer }).promise;
+        console.log('Document loaded, getting first page...');
         const page = await pdf.getPage(1);
 
         const viewport = page.getViewport({ scale: 4 });
@@ -47,7 +56,9 @@ export async function convertPdfToImage(
             context.imageSmoothingQuality = "high";
         }
 
+        console.log('Rendering page...');
         await page.render({ canvasContext: context!, viewport }).promise;
+        console.log('Page rendered, converting to blob...');
 
         return new Promise((resolve) => {
             canvas.toBlob(
@@ -76,10 +87,11 @@ export async function convertPdfToImage(
             ); // Set quality to maximum (1.0)
         });
     } catch (err) {
+        console.error('PDF conversion error details:', err);
         return {
             imageUrl: "",
             file: null,
-            error: `Failed to convert PDF: ${err}`,
+            error: err instanceof Error ? err.message : String(err),
         };
     }
 }
