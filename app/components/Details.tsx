@@ -1,11 +1,10 @@
-import type { Feedback } from "~/types";
 import { cn } from "~/lib/utils";
 import {
     Accordion,
     AccordionContent,
     AccordionHeader,
     AccordionItem,
-} from "../Accordion";
+} from "./Accordion";
 
 const ScoreBadge = ({ score }: { score: number }) => {
     return (

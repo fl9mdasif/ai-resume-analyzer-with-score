@@ -44,7 +44,7 @@ const ATS = ({
                     <div className="flex flex-row gap-2 items-center" key={index}>
                         <img
                             src={
-                                suggestion.type === "good"
+                                suggestion.type.toLowerCase() === "good"
                                     ? "/icons/check.svg"
                                     : "/icons/warning.svg"
                             }

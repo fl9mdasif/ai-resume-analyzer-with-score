@@ -151,6 +151,14 @@ export const prepareInstructions = ({
   The rating can be low if the resume is bad.
   Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
   If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
+
+  CRITICAL SKILL MATCHING RULES:
+  - When matching skills from the job description to the resume, be flexible.
+  - Match skills regardless of whether they have extensions or not (e.g., "React" matches "React.js" or "React.tsx").
+  - If a user mentions projects with specific file extensions (like .py, .java, .tsx, .ts), count these as valid experience in those technologies.
+  - A skill mentioned with a variation (e.g., "TS" for "TypeScript", "JS" for "JavaScript") is a valid match.
+  - Update the "skills" score to reflect these matches accurately. The score should represent how well the candidate's skills (including those implied by file extensions) align with the job requirements.
+
   If available, use the job description for the job user is applying to to give more detailed feedback.
   If provided, take the job description into consideration.
   The job title is: ${jobTitle}

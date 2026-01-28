@@ -84,7 +84,7 @@ const Upload = () => {
         const jobTitle = formData.get('job-title') as string;
         const jobDescription = formData.get('job-description') as string;
 
-        console.log(companyName, jobTitle, jobDescription);
+        // console.log(companyName, jobTitle,);
         if (!file) return;
 
         handleAnalyze({ companyName, jobTitle, jobDescription, file });
