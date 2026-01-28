@@ -76,6 +76,10 @@ interface PuterStore {
             path: string,
             message: string
         ) => Promise<AIResponse | undefined>;
+        feedbackWithText: (
+            text: string,
+            message: string
+        ) => Promise<AIResponse | undefined>;
         img2txt: (
             image: string | File | Blob,
             testMode?: boolean
@@ -340,17 +344,30 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                     role: "user",
                     content: [
                         {
-                            type: "file",
-                            puter_path: path,
-                        },
-                        {
                             type: "text",
                             text: message,
+                        },
+                        {
+                            type: "file",
+                            puter_path: path,
                         },
                     ],
                 },
             ],
-            { model: "claude-sonnet-4" }
+            { model: "gpt-4o" }
+        ) as Promise<AIResponse | undefined>;
+    };
+
+    const feedbackWithText = async (resumeText: string, message: string) => {
+        const puter = getPuter();
+        if (!puter) {
+            setError("Puter.js not available");
+            return;
+        }
+
+        return puter.ai.chat(
+            `Resume Content:\n${resumeText}\n\nInstructions:\n${message}`,
+            { model: "gpt-4o" }
         ) as Promise<AIResponse | undefined>;
     };
 
@@ -439,6 +456,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                 options?: PuterChatOptions
             ) => chat(prompt, imageURL, testMode, options),
             feedback: (path: string, message: string) => feedback(path, message),
+            feedbackWithText: (text: string, message: string) => feedbackWithText(text, message),
             img2txt: (image: string | File | Blob, testMode?: boolean) =>
                 img2txt(image, testMode),
         },

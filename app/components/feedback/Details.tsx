@@ -45,20 +45,20 @@ const CategoryHeader = ({
     categoryScore,
 }: {
     title: string;
-    categoryScore: number;
+    categoryScore?: number;
 }) => {
     return (
         <div className="flex flex-row gap-4 items-center py-2">
             <p className="text-2xl font-semibold">{title}</p>
-            <ScoreBadge score={categoryScore} />
+            <ScoreBadge score={categoryScore ?? 0} />
         </div>
     );
 };
 
 const CategoryContent = ({
-    tips,
+    tips = [],
 }: {
-    tips: { type: "good" | "improve"; tip: string; explanation: string }[];
+    tips?: { type: "good" | "improve"; tip: string; explanation: string }[];
 }) => {
     return (
         <div className="flex flex-col gap-4 items-center w-full">
@@ -67,7 +67,7 @@ const CategoryContent = ({
                     <div className="flex flex-row gap-2 items-center" key={index}>
                         <img
                             src={
-                                tip.type.toLowerCase() === "good" ? "/icons/check.svg" : "/icons/warning.svg"
+                                tip.type?.toLowerCase() === "good" ? "/icons/check.svg" : "/icons/warning.svg"
                             }
                             alt="score"
                             className="size-5"
@@ -79,10 +79,10 @@ const CategoryContent = ({
             <div className="flex flex-col gap-4 w-full">
                 {tips.map((tip, index) => (
                     <div
-                        key={index + tip.tip}
+                        key={index + (tip.tip ?? index)}
                         className={cn(
                             "flex flex-col gap-2 rounded-2xl p-4",
-                            tip.type.toLowerCase() === "good"
+                            tip.type?.toLowerCase() === "good"
                                 ? "bg-green-50 border border-green-200 text-green-700"
                                 : "bg-yellow-50 border border-yellow-200 text-yellow-700"
                         )}
@@ -90,7 +90,7 @@ const CategoryContent = ({
                         <div className="flex flex-row gap-2 items-center">
                             <img
                                 src={
-                                    tip.type.toLowerCase() === "good"
+                                    tip.type?.toLowerCase() === "good"
                                         ? "/icons/check.svg"
                                         : "/icons/warning.svg"
                                 }
@@ -115,44 +115,44 @@ const Details = ({ feedback }: { feedback: Feedback }) => {
                     <AccordionHeader itemId="tone-style">
                         <CategoryHeader
                             title="Tone & Style"
-                            categoryScore={feedback.toneAndStyle.score}
+                            categoryScore={feedback.toneAndStyle?.score}
                         />
                     </AccordionHeader>
                     <AccordionContent itemId="tone-style">
-                        <CategoryContent tips={feedback.toneAndStyle.tips} />
+                        <CategoryContent tips={feedback.toneAndStyle?.tips} />
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem id="content">
                     <AccordionHeader itemId="content">
                         <CategoryHeader
                             title="Content"
-                            categoryScore={feedback.content.score}
+                            categoryScore={feedback.content?.score}
                         />
                     </AccordionHeader>
                     <AccordionContent itemId="content">
-                        <CategoryContent tips={feedback.content.tips} />
+                        <CategoryContent tips={feedback.content?.tips} />
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem id="structure">
                     <AccordionHeader itemId="structure">
                         <CategoryHeader
                             title="Structure"
-                            categoryScore={feedback.structure.score}
+                            categoryScore={feedback.structure?.score}
                         />
                     </AccordionHeader>
                     <AccordionContent itemId="structure">
-                        <CategoryContent tips={feedback.structure.tips} />
+                        <CategoryContent tips={feedback.structure?.tips} />
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem id="skills">
                     <AccordionHeader itemId="skills">
                         <CategoryHeader
                             title="Skills"
-                            categoryScore={feedback.skills.score}
+                            categoryScore={feedback.skills?.score}
                         />
                     </AccordionHeader>
                     <AccordionContent itemId="skills">
-                        <CategoryContent tips={feedback.skills.tips} />
+                        <CategoryContent tips={feedback.skills?.tips} />
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>

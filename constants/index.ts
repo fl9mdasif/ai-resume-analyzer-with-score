@@ -5,164 +5,95 @@ export const resumes: Resume[] = [
         id: "1",
         companyName: "Google",
         jobTitle: "Frontend Developer",
-        imagePath: "/images/resume-1.png",
+        imagePath: "/images/resume_01.png",
         resumePath: "/resumes/resume-1.pdf",
         feedback: {
             overallScore: 85,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
+            ATS: { score: 90, tips: [] },
+            toneAndStyle: { score: 90, tips: [] },
+            content: { score: 90, tips: [] },
+            structure: { score: 90, tips: [] },
+            skills: { score: 90, tips: [] },
         },
     },
     {
         id: "2",
         companyName: "Microsoft",
         jobTitle: "Cloud Engineer",
-        imagePath: "/images/resume-2.png",
+        imagePath: "/images/resume_02.png",
         resumePath: "/resumes/resume-2.pdf",
         feedback: {
             overallScore: 55,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
+            ATS: { score: 80, tips: [] },
+            toneAndStyle: { score: 70, tips: [] },
+            content: { score: 60, tips: [] },
+            structure: { score: 65, tips: [] },
+            skills: { score: 75, tips: [] },
         },
     },
     {
         id: "3",
         companyName: "Apple",
         jobTitle: "iOS Developer",
-        imagePath: "/images/resume-3.png",
+        imagePath: "/images/resume_03.png",
         resumePath: "/resumes/resume-3.pdf",
         feedback: {
             overallScore: 75,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
+            ATS: { score: 85, tips: [] },
+            toneAndStyle: { score: 80, tips: [] },
+            content: { score: 75, tips: [] },
+            structure: { score: 70, tips: [] },
+            skills: { score: 80, tips: [] },
         },
     },
 ];
 
-export const AIResponseFormat = `
-      interface Feedback {
-      overallScore: number; //max 100
-      ATS: {
-        score: number; //rate based on ATS suitability
-        tips: {
-          type: "good" | "improve";
-          tip: string; //give 3-4 tips
-        }[];
-      };
-      toneAndStyle: {
-        score: number; //max 100
-        tips: {
-          type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
-      };
-      content: {
-        score: number; //max 100
-        tips: {
-          type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
-      };
-      structure: {
-        score: number; //max 100
-        tips: {
-          type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
-      };
-      skills: {
-        score: number; //max 100
-        tips: {
-          type: "good" | "improve";
-          tip: string; //make it a short "title" for the actual explanation
-          explanation: string; //explain in detail here
-        }[]; //give 3-4 tips
-      };
-    }`;
+export const AIResponseFormat = `{
+  "overallScore": number,
+  "ATS": {
+    "score": number,
+    "tips": [
+      { "type": "good" | "improve", "tip": "string" }
+    ]
+  },
+  "toneAndStyle": {
+    "score": number,
+    "tips": [
+      { "type": "good" | "improve", "tip": "string", "explanation": "string" }
+    ]
+  },
+  "content": {
+    "score": number,
+    "tips": [
+      { "type": "good" | "improve", "tip": "string", "explanation": "string" }
+    ]
+  },
+  "structure": {
+    "score": number,
+    "tips": [
+      { "type": "good" | "improve", "tip": "string", "explanation": "string" }
+    ]
+  },
+  "skills": {
+    "score": number,
+    "tips": [
+      { "type": "good" | "improve", "tip": "string", "explanation": "string" }
+    ]
+  }
+}`;
 
-export const prepareInstructions = ({
-    jobTitle,
-    jobDescription,
-    AIResponseFormat,
-}: {
-    jobTitle: string;
-    jobDescription: string;
-    AIResponseFormat: string;
-}) =>
-    `You are an expert in ATS (Applicant Tracking System) and resume analysis.
-  Please analyze and rate this resume and suggest how to improve it.
-  The rating can be low if the resume is bad.
-  Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
-  If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
+export const prepareInstructions = ({ jobTitle, jobDescription, AIResponseFormat }: { jobTitle: string; jobDescription: string; AIResponseFormat: string; }) =>
+    `Analyze the resume file attached to this message and provide a detailed review for the position of ${jobTitle}.
 
-  CRITICAL SKILL MATCHING RULES:
-  - When matching skills from the job description to the resume, be flexible.
-  - Match skills regardless of whether they have extensions or not (e.g., "React" matches "React.js" or "React.tsx").
-  - If a user mentions projects with specific file extensions (like .py, .java, .tsx, .ts), count these as valid experience in those technologies.
-  - A skill mentioned with a variation (e.g., "TS" for "TypeScript", "JS" for "JavaScript") is a valid match.
-  - Update the "skills" score to reflect these matches accurately. The score should represent how well the candidate's skills (including those implied by file extensions) align with the job requirements.
+    CRITICAL RULES:
+    1. **ANALYSIS**: You must read the content of the attached file. If you cannot see it, notify the user.
+    2. **SCORING**: Provide a numeric score (1-100) for every category. Zero is only for completely missing information.
+    3. **JSON FORMAT**: Your response MUST be a single, valid JSON object. No markdown, no backticks, no preamble.
+    4. **CONTENT**: For Tone & Style, Content, Structure, and Skills, provide a score and a list of tips (type: "good" or "improve").
 
-  If available, use the job description for the job user is applying to to give more detailed feedback.
-  If provided, take the job description into consideration.
-  The job title is: ${jobTitle}
-  The job description is: ${jobDescription}
-  Provide the feedback using the following format: ${AIResponseFormat}
-  Return the analysis as a JSON object, without any other text and without the backticks.
-  Do not include any other text or comments.`;
+    JOB INFORMATION:
+    - Target Role: ${jobTitle}
+    - Requirements: ${jobDescription}
+
+    EXPECTED JSON STRUCTURE:
+    ${AIResponseFormat}`;

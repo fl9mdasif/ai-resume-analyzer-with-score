@@ -1,9 +1,8 @@
 import { Link, useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { usePuterStore } from "~/lib/puter";
-import Summary from "~/components/Summary";
-// import ATS from "~/components/ATS";
-import Details from "~/components/Details";
+import Summary from "~/components/feedback/Summary";
+import Details from "~/components/feedback/Details";
 import ATS from "~/components/feedback/ATS";
 
 export const meta = () => ([
@@ -75,11 +74,21 @@ const Resume = () => {
                 <section className="feedback-section">
                     <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
                     {feedback ? (
-                        <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
-                            <Summary feedback={feedback} />
-                            <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []} />
-                            <Details feedback={feedback} />
-                        </div>
+                        (feedback as any).error ? (
+                            <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl flex flex-col gap-4">
+                                <h3 className="text-2xl font-bold">Analysis Error</h3>
+                                <p>{(feedback as any).error}</p>
+                                <Link to="/upload" className="text-red-800 font-semibold underline">Try uploading again</Link>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
+                                <Summary feedback={feedback} />
+                                {feedback.ATS && (
+                                    <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []} />
+                                )}
+                                <Details feedback={feedback} />
+                            </div>
+                        )
                     ) : (
                         <img src="/images/resume-scan-2.gif" className="w-full" />
                     )}

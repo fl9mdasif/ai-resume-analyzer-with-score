@@ -24,9 +24,10 @@ interface KVItem {
 }
 
 interface ChatMessageContent {
-    type: "file" | "text";
+    type: "file" | "text" | "image";
     puter_path?: string;
     text?: string;
+    image?: string;
 }
 
 interface ChatMessage {

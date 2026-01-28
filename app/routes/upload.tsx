@@ -28,7 +28,8 @@ const Upload = () => {
             setIsProcessing(true);
 
             setStatusText('Uploading the file...');
-            const uploadedFile = await fs.upload([file]);
+            const uploadedFileResult = await fs.upload([file]);
+            const uploadedFile = Array.isArray(uploadedFileResult) ? uploadedFileResult[0] : uploadedFileResult;
             if (!uploadedFile) throw new Error('Failed to upload file');
 
             setStatusText('Converting to image...');
@@ -36,7 +37,8 @@ const Upload = () => {
             if (!imageFile.file) throw new Error(imageFile.error || 'Failed to convert PDF to image');
 
             setStatusText('Uploading the image...');
-            const uploadedImage = await fs.upload([imageFile.file]);
+            const uploadedImageResult = await fs.upload([imageFile.file]);
+            const uploadedImage = Array.isArray(uploadedImageResult) ? uploadedImageResult[0] : uploadedImageResult;
             if (!uploadedImage) throw new Error('Failed to upload image');
 
             setStatusText('Preparing data...');
@@ -50,22 +52,55 @@ const Upload = () => {
             }
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
+            setStatusText('Extracting content...');
+            const extractedText = await ai.img2txt(imageFile.file);
+            console.log('Extracted Text:', extractedText);
+
+            if (!extractedText) {
+                console.warn('Text extraction failed, falling back to manual analysis...');
+            }
+
             setStatusText('Analyzing...');
 
-            const feedback = await ai.feedback(
-                uploadedFile.path,
-                prepareInstructions({ jobTitle, jobDescription, AIResponseFormat })
-            )
+            // If we have text, use it. Otherwise, try the file path as a last resort.
+            const feedback = extractedText
+                ? await ai.feedbackWithText(extractedText, prepareInstructions({ jobTitle, jobDescription, AIResponseFormat }))
+                : await ai.feedback(uploadedFile.path, prepareInstructions({ jobTitle, jobDescription, AIResponseFormat }));
+
             if (!feedback) throw new Error('Failed to analyze resume');
+
+            // Puter error check
+            if ((feedback as any).error) {
+                console.error('Puter AI Error:', (feedback as any).error);
+                throw new Error(`Puter Error: ${(feedback as any).error}`);
+            }
 
             const feedbackText = typeof feedback.message.content === 'string'
                 ? feedback.message.content
                 : feedback.message.content[0].text;
 
-            data.feedback = JSON.parse(feedbackText);
+            console.log('Raw AI Response:', feedbackText);
+
+            // Robust JSON extraction
+            let cleanedJson = '';
+            const jsonBlockMatch = feedbackText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+            if (jsonBlockMatch) {
+                cleanedJson = jsonBlockMatch[1];
+            } else {
+                const jsonMatch = feedbackText.match(/\{[\s\S]*\}/);
+                cleanedJson = jsonMatch ? jsonMatch[0] : feedbackText;
+            }
+
+            try {
+                data.feedback = JSON.parse(cleanedJson);
+            } catch (e) {
+                console.error('Failed to parse AI response as JSON. Cleaned text:', cleanedJson);
+                // If it's not JSON, maybe the AI said something useful (like "I don't see the file")
+                throw new Error(feedbackText.length < 200 ? feedbackText : 'The AI returned an invalid response format. Please try again.');
+            }
+
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
             setStatusText('Analysis complete, redirecting...');
-            console.log(data);
             navigate(`/resume/${uuid}`);
         } catch (error) {
             console.error('Analysis error:', error);
