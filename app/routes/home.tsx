@@ -8,7 +8,7 @@ import type { Resume } from "~/types";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "Resumind" },
+    { title: "ResumeLense" },
     { name: "description", content: "Smart feedback for your dream job!" },
   ];
 }
