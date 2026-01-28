@@ -6,9 +6,9 @@
 
 An intelligent, high-performance resume analysis platform built for the modern era. **AI Resume Analyzer Lense** leverages cutting-edge AI to provide instant scoring, detailed feedback, and actionable insights to help candidates land their dream jobs.
 
-![Hero Screenshot Placeholder](https://via.placeholder.com/1200x600?text=AI+Resume+Analyzer+Lense+Dashboard)
+![Hero Screenshot Placeholder](https://i.ibb.co.com/fVdkx9fL/score-details.png)
 
-## Live link: [https://ai-resume-analyzer-lense-8llxg.puter.site]https://ai-resume-analyzer-lense-8llxg.puter.site
+**Live link:** [https://ai-resume-analyzer-lense-8llxg.puter.site]https://ai-resume-analyzer-lense-8llxg.puter.site
 
 ## ✨ Features
 
